@@ -41,6 +41,14 @@ def main() -> None:
         raise ValueError("entry must be a single line")
     if LINE != LINE.strip():
         raise ValueError("entry must not start or end with whitespace")
+    # A museum label is dated: require the ", c. YYYY" dating marker so the
+    # line cannot drift into a plain caption, and reject control characters
+    # the gate's UTF-8 text must not carry.
+    for ch in LINE:
+        if ord(ch) < 32 or ord(ch) == 127:
+            raise ValueError("entry must not contain control characters")
+    if ", c. " not in LINE:
+        raise ValueError("museum label must carry its ', c. YYYY' dating")
     length = len(LINE)
     if length < 1 or length > 200:
         raise ValueError(f"entry is {length} characters; the gate needs 1-200")
